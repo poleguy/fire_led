@@ -1,0 +1,18 @@
+## why is pytest under pip? because it works that way:
+## https://stackoverflow.com/questions/49154899/resolvepackagenotfound-create-env-using-conda-and-yml-file-on-macos
+
+channels:
+  - defaults
+dependencies:
+  - python
+  - numpy
+  - matplotlib
+  - scipy
+  - requests
+  - pandas
+  - typer
+  - pip
+  - pip:
+    - pytest
+    - pyserial
+    - pafy

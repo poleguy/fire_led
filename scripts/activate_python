@@ -1,0 +1,23 @@
+#!/bin/bash
+# use:
+#  source scripts/activate_python
+# running this directly without source will not effect the active environment
+#
+# https://stackoverflow.com/questions/496702/can-a-shell-script-set-environment-variables-of-the-calling-shell
+
+# .bashrc should be updated by running
+# conda init bash
+# conda config --set auto_activate_base false
+# conda config --set env_prompt '({name})'
+
+# to get this to run in a noninteractive script (which doesn't source /etc/profile.d/conda.sh)
+# https://stackoverflow.com/questions/52779016/conda-command-working-in-command-prompt-but-not-in-bash-script
+# https://github.com/conda/conda/issues/7980
+# https://stackoverflow.com/questions/55507519/python-activate-conda-env-through-shell-script
+eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
+# note: jenkins sources this environment only when the agent is started!
+# restart the agent if you need to pull in fresh environment settings
+
+conda activate ./cenv
+# set this so breakpoint() calls ipdb
+export PYTHONBREAKPOINT=ipdb.set_trace

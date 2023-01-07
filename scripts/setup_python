@@ -1,0 +1,70 @@
+#!/bin/bash
+# run like this:
+#   ./setup_python 
+#  source scripts/activate_python
+#
+# running activate_python will activate the environment
+#
+# https://stackoverflow.com/questions/496702/can-a-shell-script-set-environment-variables-of-the-calling-shell
+
+# stop on error
+set -e
+# this will create a clean ./cenv if it does not exist
+
+# .bashrc should be updated by running
+# conda init bash
+# conda config --set auto_activate_base false
+# conda config --set env_prompt '({name})'
+
+# to get this to run in a noninteractive script (which doesn't source /etc/profile.d/conda.sh)
+# https://stackoverflow.com/questions/52779016/conda-command-working-in-command-prompt-but-not-in-bash-script
+# https://github.com/conda/conda/issues/7980
+# https://stackoverflow.com/questions/55507519/python-activate-conda-env-through-shell-script
+eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
+# note: jenkins sources this environment only when the agent is started!
+# restart the agent if you need to pull in fresh environment settings
+
+
+
+
+
+
+# if directory doesn't exist, create the environment
+if [ ! -d "./cenv" ]; then
+    conda env create --prefix ./cenv -f environment.yml
+    # if ./cenv already exists, the line above will error out with "CondaValueError: prefix already exists".
+else
+    # If the ./cenv is already there, error out, and ask the user to correct this mistake. 
+    # As conda seems to not do a good job updating environments
+    echo "cenv already exists just run source scripts/activate_python"
+    echo "or in a new terminal window rm -rf cenv; rm -rf src to blow away your current environment and start fresh"
+    echo "setup_python may not work right if the terminal window is not fresh"
+    #conda env update --prefix ./cenv -f environment.yml 
+    exit 1
+fi
+
+# 
+# https://stackoverflow.com/questions/45510430/install-packages-into-existing-conda-environment-specified-in-environment-yml
+#Unfortunately if you have an environment name in environment.yml the update/install will happen to that named environment.
+
+
+# for debug
+echo "conda environments:"
+conda env list
+
+# save for reproducibility later
+# https://stackoverflow.com/questions/41274007/anaconda-export-environment-file
+#conda list --prefix cenv --export > cenv-export.txt
+conda env export --prefix cenv | grep -v "^prefix: " > cenv-export.yml
+
+# activate (to continue to support source ./setup_python in existing scripts
+source scripts/activate_python
+
+
+# other helpful commands:
+# conda deactivate
+# conda env remove --prefix ./env
+# conda env remove --name test-env
+echo " "
+echo "now run source scripts/activate_python to activate the environment"
+
