@@ -124,6 +124,7 @@ def modification_date(filename):
 
 def main():
 
+    failure_count = 0
    
     #for i in range(10):
     while True:
@@ -133,16 +134,29 @@ def main():
         minutes = 60
         
         watchdog_fed = False
-        if os.path.exists(dog_food):
+        failure_event = False
+        if not os.path.exists(dog_food):
+            failure_event = True
+        # the image file must also exist
+        elif not os.path.exists(filename):
+            failure_event = True
+            # transiently missing?
+            # wait till rsync is done?
+        else:
             today = datetime.datetime.today()
             modified_date = modification_date(dog_food)
             duration = today - modified_date
             if duration.total_seconds() < 10*minutes:
-                # the image file must also exist
-                if os.path.exists(filename):
-                    watchdog_fed = True
+                watchdog_fed = True
+            else:
+                failure_event = True
+
+        if failure_event:
+            time.sleep(10)
+            failure_count += 1
                 
-        if not watchdog_fed:
+        if failure_count > 60:
+            failure_count = 0
                 
             # if not fed for more than 10 minutes, go to idle behavior
     
