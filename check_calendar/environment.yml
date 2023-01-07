@@ -1,0 +1,21 @@
+###################################################################
+###
+### environment requirements for running dpsm_rx hw and telemetry
+### note that this was originally copied from mcr_hw_test
+###
+###  A Stezskal
+###################################################################
+
+
+channels:       
+#  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.9
+  - pip
+  - pip:
+    - wget
+#    - vobject
+    - typer
+#    - icalevents==0.1.27
+    - icalendar>=5.0
