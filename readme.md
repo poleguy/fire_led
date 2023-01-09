@@ -5,3 +5,6 @@ to run
 add to rc.local and boot
 or run 
 python test_mock_neopixel.py
+
+https://practicalgit.com/blog/make-git-ignore-local-changes-to-tracked-files.html
+git update-index --assume-unchanged check_calendar/reachcalendar.ics
