@@ -11,9 +11,22 @@
 import check_calendar
 import bash
 import time
-from urllib.error import HTTPError
+import urllib.error
+
+
+# https://stackoverflow.com/questions/14132789/relative-imports-for-the-billionth-time
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+    import logger
+else:
+    # uses current package visibility
+    from . import logger
+
+
+logger = logger.get_logger(__name__)
 
 def main():
+    logger.debug("Starting up")
 
     state = 'unknown'
     while True:
@@ -21,36 +34,44 @@ def main():
         print("checking status")
         try:
             status = check_calendar.main()
-        except HTTPError:
+        except urllib.error.HTTPError:
+            logger.debug("HTTP Error")
             # make it flash to notice how often this happens
             status = {'calendar_status' : "error"}
             continue
+        except urllib.error.URLError:
+            logger.debug("URL Error")
+            # make it flash to notice how often this happens
+            status = {'calendar_status' : "error"}
+            continue
+            
     
 
 
         if status['calendar_status'] == state:
             print(f'nothing to do: {state}')
         elif status['calendar_status'] == 'error':
-            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/red_stripes.jpg pi@fire.local:/run/user/1000/image.jpg"
+            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/red_stripes.jpg pi@fire.local:/run/shm/image.jpg"
         elif status['calendar_status'] == 'busy':
-            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/busy.jpg pi@fire.local:/run/user/1000/image.jpg"
+            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/busy.jpg pi@fire.local:/run/shm/image.jpg"
         elif status['calendar_status'] == 'pre meeting':
-            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/pre_meeting.jpg pi@fire.local:/run/user/1000/image.jpg"
+            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/pre_meeting.jpg pi@fire.local:/run/shm/image.jpg"
         else:
             #cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/idle.jpg pi@fire.local:/home/pi/fire_led/image.jpg"
-            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/purple_glow.jpg pi@fire.local:/run/user/1000/image.jpg"
+            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/purple_glow.jpg pi@fire.local:/run/shm/image.jpg"
 
         state = status['calendar_status']
 
         try:
             bash.bash(cmd)
             # feed watchdog to prevent leds from going to idle state
-            bash.bash("ssh pi@fire.local touch /run/user/1000/dog_food")
+            bash.bash("ssh pi@fire.local touch /run/shm/dog_food")
 
         except ValueError as e:
             if "Bash command failed" in str(e):
                 # e.g. ssh: Could not resolve hostname fire.local: Name or service not known
                 # keep trying until it comes back
+                logger.debug("Bash command failed")
                 continue
             raise
 

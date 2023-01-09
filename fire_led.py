@@ -8,6 +8,8 @@
 # deploy changes:
 # cd ~/flippy-data/2022/fire_led
 # rsync -rahP ./ pi@fire.local:/home/pi/fire_led/
+# rsync -rahP ~/flippy-data/2022/fire_led/ pi@fire.local:/home/pi/fire_led/
+
 
 
 # SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
@@ -28,6 +30,17 @@ else:
     import mock_board as board
     import mock_neopixel as neopixel
 
+# https://stackoverflow.com/questions/14132789/relative-imports-for-the-billionth-time
+if __package__ is None or __package__ == '':
+    # uses current directory visibility
+    import logger
+else:
+    # uses current package visibility
+    from . import logger
+
+logger = logger.get_logger(__name__)
+
+    
 # Choose an open pin connected to the Data In of the NeoPixel strip, i.e. board.D18
 # NeoPixels must be connected to D10, D12, D18 or D21 to work.
 pixel_pin = board.D18
@@ -123,23 +136,27 @@ def modification_date(filename):
 
 
 def main():
+    logger.info('starting up')
 
     failure_count = 0
+    failure_time_start = time.monotonic()
    
     #for i in range(10):
     while True:
 
-        filename = "/run/user/1000/image.jpg"
-        dog_food = '/run/user/1000/dog_food'
+        filename = "/run/shm/image.jpg"
+        dog_food = '/run/shm/dog_food'
         minutes = 60
         
         watchdog_fed = False
         failure_event = False
         if not os.path.exists(dog_food):
             failure_event = True
+            logger.debug('dog_food file does not exist')
         # the image file must also exist
         elif not os.path.exists(filename):
             failure_event = True
+            logger.debug('image.jpg does not exist')
             # transiently missing?
             # wait till rsync is done?
         else:
@@ -150,13 +167,20 @@ def main():
                 watchdog_fed = True
             else:
                 failure_event = True
+                logger.debug('watchdog not fed')
 
         if failure_event:
-            time.sleep(10)
             failure_count += 1
-                
-        if failure_count > 60:
+            logger.debug(f'failed {failure_count} times in a row')
+            failure_time = time.monotonic() - failure_time_start
+            time.sleep(0.100) # to prevent excessive processor usage
+        else:
+            # reset if we see any good ones
             failure_count = 0
+            failure_time = 0
+            
+        if failure_time > 10*minutes:
+            logger.debug(f'failed {failure_count} times in a row, {failure_time} seconds')
                 
             # if not fed for more than 10 minutes, go to idle behavior
     
@@ -191,7 +215,11 @@ def main():
 
    
         capture = cv2.VideoCapture()
-        capture.open(filename)
+        try:
+            capture.open(filename)
+        except:
+            logger.debug("open cv failure")
+            continue
     
         success,image = capture.read()
     
@@ -273,5 +301,15 @@ def main():
 
 
 if __name__ == "__main__":
+    import typer
+    
+#  https://stackoverflow.com/questions/11536764/how-to-fix-attempted-relative-import-in-non-package-even-with-init-py
+#    if __package__ is None:
+#        import sys
+#        from os import path
+#        sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+#        from components.core import GameLoopEvents
+#    else:
+#        from ..components.core import GameLoopEvents
 
-    main()
+    typer.run(main)
