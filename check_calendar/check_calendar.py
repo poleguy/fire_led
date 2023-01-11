@@ -9,7 +9,10 @@
 #from icalevents.icalevents import events
 
 import json
-import wget
+#import requests
+import urllib.request
+
+#import wget
 #import vobject
 #from ics import Calendar, Event
 #import ics
@@ -38,7 +41,32 @@ def main(url_file = "calendar_url.txt"):
     if os.path.exists(filename):
         os.remove(filename)
     
-    wget.download(url)
+    #wget.download(url) # this hung on me.. punting
+    
+    # https://stackoverflow.com/questions/35115513/python-bad-request-in-get-but-wget-and-curl-work
+    #headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'}
+    # https://stackoverflow.com/questions/12624133/wget-with-python-time-limit
+    
+    # https://stackoverflow.com/questions/20227324/programmatically-download-content-from-shared-dropbox-folder-links
+#    headers = {  'User-Agent': 'Wget/1.20.3 (linux-gnu)',
+#                 'Accept': '*/*',
+#                 'Accept-Encoding': 'identity',
+#                 'Host': 'outlook.office365.com',
+#                 'Connection': 'Keep-Alive'}
+#
+#    print(url)
+#    response = requests.get(url, timeout=10.0, data=json.dumps(headers=headers)
+
+
+
+    response = urllib.request.urlopen(url, timeout=10.0)
+    data = response.read()      # a `bytes` object
+    #text = data.decode('utf-8') # a `str`; this step can't be used if data is binary
+    
+    with open(filename, 'wb') as f:
+        f.write(data)
+
+
     
     
     #utc=pytz.UTC

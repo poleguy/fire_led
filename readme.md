@@ -7,4 +7,6 @@ or run
 python test_mock_neopixel.py
 
 https://practicalgit.com/blog/make-git-ignore-local-changes-to-tracked-files.html
-git update-index --assume-unchanged check_calendar/reachcalendar.ics
+
+    git update-index --assume-unchanged check_calendar/reachcalendar.ics
+    git update-index --assume-unchanged check_calendar/calendar_status.json

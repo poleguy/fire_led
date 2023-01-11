@@ -13,6 +13,8 @@ import bash
 import time
 import urllib.error
 
+#import requests.exceptions
+
 
 # https://stackoverflow.com/questions/14132789/relative-imports-for-the-billionth-time
 if __package__ is None or __package__ == '':
@@ -32,19 +34,31 @@ def main():
     while True:
 
         print("checking status")
+        # https://stackoverflow.com/questions/8763451/how-to-handle-urllibs-timeout-in-python-3
         try:
             status = check_calendar.main()
-        except urllib.error.HTTPError:
+#        except requests.exceptions.Timeout:
+#            logger.debug("Timeout")
+#            # make it flash to notice how often this happens
+#            status = {'calendar_status' : "error"}
+#            continue
+#        except requests.exceptions.ConnectionError:
+#            logger.debug("Connection Error")
+#            # make it flash to notice how often this happens
+#            status = {'calendar_status' : "error"}
+#            continue
+        except urllib.error.HTTPError as e:
             logger.debug("HTTP Error")
             # make it flash to notice how often this happens
             status = {'calendar_status' : "error"}
             continue
-        except urllib.error.URLError:
+        except urllib.error.URLError as e:
             logger.debug("URL Error")
+            logger.debug(type(e))
             # make it flash to notice how often this happens
             status = {'calendar_status' : "error"}
             continue
-            
+           
     
 
 

@@ -6,13 +6,6 @@ channels:
 dependencies:
   - python
   - numpy
-  - matplotlib
-  - scipy
-  - requests
-  - pandas
   - typer
   - pip
-  - pip:
-    - pytest
-    - pyserial
-    - pafy
+#  - pip:
