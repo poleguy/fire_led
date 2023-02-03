@@ -12,6 +12,7 @@ import check_calendar
 import bash
 import time
 import urllib.error
+import socket
 
 #import requests.exceptions
 
@@ -54,6 +55,13 @@ def main():
             continue
         except urllib.error.URLError as e:
             logger.debug("URL Error")
+            logger.debug(type(e))
+            # make it flash to notice how often this happens
+            status = {'calendar_status' : "error"}
+            continue
+        # https://stackoverflow.com/questions/8763451/how-to-handle-urllibs-timeout-in-python-3
+        except socket.timeout as e:
+            logger.debug("Timeout Error")
             logger.debug(type(e))
             # make it flash to notice how often this happens
             status = {'calendar_status' : "error"}

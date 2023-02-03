@@ -8,4 +8,6 @@ dependencies:
   - numpy
   - typer
   - pip
-#  - pip:
+  - pip:
+    - icalendar
+    - recurring_ical_events
