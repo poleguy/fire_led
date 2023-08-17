@@ -10,3 +10,13 @@ https://practicalgit.com/blog/make-git-ignore-local-changes-to-tracked-files.htm
 
     git update-index --assume-unchanged check_calendar/reachcalendar.ics
     git update-index --assume-unchanged check_calendar/calendar_status.json
+
+
+# setup
+add led_controller.service
+to stop:
+
+'''
+  sudo systecmctl stop led_controller.service
+  sudo systecmctl disable led_controller.service
+'''

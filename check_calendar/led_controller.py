@@ -73,14 +73,14 @@ def main():
         if status['calendar_status'] == state:
             print(f'nothing to do: {state}')
         elif status['calendar_status'] == 'error':
-            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/red_stripes.jpg pi@fire.local:/run/shm/image.jpg"
+            cmd = "rsync -P /home/poleguy/flippy-data/2023/fire_led/red_stripes.jpg pi@fire.local:/run/shm/image.jpg"
         elif status['calendar_status'] == 'busy':
-            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/busy.jpg pi@fire.local:/run/shm/image.jpg"
+            cmd = "rsync -P /home/poleguy/flippy-data/2023/fire_led/busy.jpg pi@fire.local:/run/shm/image.jpg"
         elif status['calendar_status'] == 'pre meeting':
-            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/pre_meeting.jpg pi@fire.local:/run/shm/image.jpg"
+            cmd = "rsync -P /home/poleguy/flippy-data/2023/fire_led/pre_meeting.jpg pi@fire.local:/run/shm/image.jpg"
         else:
-            #cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/idle.jpg pi@fire.local:/home/pi/fire_led/image.jpg"
-            cmd = "rsync -P /home/poleguy/flippy-data/2022/fire_led/purple_glow.jpg pi@fire.local:/run/shm/image.jpg"
+            #cmd = "rsync -P /home/poleguy/flippy-data/2023/fire_led/idle.jpg pi@fire.local:/home/pi/fire_led/image.jpg"
+            cmd = "rsync -P /home/poleguy/flippy-data/2023/fire_led/purple_glow.jpg pi@fire.local:/run/shm/image.jpg"
 
         state = status['calendar_status']
 
