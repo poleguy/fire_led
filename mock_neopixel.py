@@ -18,7 +18,8 @@ import stripsim
 import pygame
 
 import sys
-import board
+import mock_board as board
+#import board
 #import digitalio
 #from neopixel_write import neopixel_write
 

@@ -10,7 +10,7 @@ set -e
 
 PATH=$PATH:/opt/anaconda/anaconda3/condabin/
 
-cd ~/flippy-data/2022/fire_led
+cd ~/flippy-data/2023/fire_led
 source scripts/activate_python
 cd check_calendar
 python led_controller.py

@@ -1,4 +1,4 @@
-# place in /lib/systemd/system/led.service 
+# place in /lib/systemd/system/led.service on pi
 [Unit]
 Description=Blink my LED
 After=network.target

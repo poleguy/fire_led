@@ -21,14 +21,15 @@ import cv2
 import time
 from PIL import Image, ImageDraw
 import numpy as np
-#mock = True
-mock = False
-if not mock:
-    import  board
-    import neopixel
-else:
-    import mock_board as board
-    import mock_neopixel as neopixel
+#try: 
+#    import board
+#    import neopixel
+#    mock_neopixel = False
+#except ModuleNotFoundError as e:
+#    print("module board or neopixels not found, using mock_neopixels")
+#    import mock_board as board
+#    import mock_neopixel as neopixel
+#    mock_neopixel = True
 
 # https://stackoverflow.com/questions/14132789/relative-imports-for-the-billionth-time
 if __package__ is None or __package__ == '':
@@ -41,23 +42,9 @@ else:
 logger = logger.get_logger(__name__)
 
     
-# Choose an open pin connected to the Data In of the NeoPixel strip, i.e. board.D18
-# NeoPixels must be connected to D10, D12, D18 or D21 to work.
-pixel_pin = board.D18
-
-# The number of NeoPixels
-num_pixels = 50
-
-# The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
-# For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
-ORDER = neopixel.RGB
-
-pixels = neopixel.NeoPixel(
-    pixel_pin, num_pixels, brightness=0.2, auto_write=False, pixel_order=ORDER
-)
 
 
-def wheel(pos):
+def wheel(pos, ORDER):
     # Input a value 0 to 255 to get a color value.
     # The colours are a transition r - g - b - back to r.
     if pos < 0 or pos > 255:
@@ -79,11 +66,11 @@ def wheel(pos):
     return (r, g, b) if ORDER in (neopixel.RGB, neopixel.GRB) else (r, g, b, 0)
 
 
-def rainbow_cycle(wait):
+def rainbow_cycle(wait, num_pixels, order, pixels):
     for j in range(255):
         for i in range(num_pixels):
             pixel_index = (i * 256 // num_pixels) + j
-            pixels[i] = wheel(pixel_index & 255)
+            pixels[i] = wheel(pixel_index & 255, order)
         pixels.show()
         time.sleep(wait)
 
@@ -135,18 +122,49 @@ def modification_date(filename):
     return datetime.datetime.fromtimestamp(t)
 
 
-def main():
-    logger.info('starting up')
+def main(mock:bool = False):
 
+    # if this module is imported rather than run, board and neopixel will
+    # have to be imported for it to work
+    global board, neopixel
+    if not mock:
+        import board
+        import neopixel
+    else:
+        print("mocking neopixel")
+        import mock_board as board
+        import mock_neopixel as neopixel
+
+    # Choose an open pin connected to the Data In of the NeoPixel strip, i.e. board.D18
+    # NeoPixels must be connected to D10, D12, D18 or D21 to work.
+    pixel_pin = board.D18
+    
+    # The number of NeoPixels
+    num_pixels = 50
+    
+    # The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
+    # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
+    if not mock:
+        ORDER = neopixel.RGB
+    else:
+        ORDER = neopixel.GRB
+    
+    pixels = neopixel.NeoPixel(
+        pixel_pin, num_pixels, brightness=0.2, auto_write=False, pixel_order=ORDER
+    )
+
+    logger.info('starting up')
+    minutes = 60
     failure_count = 0
-    failure_time_start = time.monotonic()
+    # start in error state
+    failure_time_start = time.monotonic() - 11 * minutes 
    
     #for i in range(10):
     while True:
 
         filename = "/run/shm/image.jpg"
         dog_food = '/run/shm/dog_food'
-        minutes = 60
+
         
         watchdog_fed = False
         failure_event = False
@@ -205,7 +223,7 @@ def main():
             pixels.show()
             time.sleep(0.1)
         
-            rainbow_cycle(0.001)  # rainbow cycle with 1ms delay per step
+            rainbow_cycle(0.001, num_pixels, ORDER, pixels)  # rainbow cycle with 1ms delay per step
             continue
         
         # extend to read jpg
@@ -216,7 +234,8 @@ def main():
    
         capture = cv2.VideoCapture()
         try:
-            capture.open(filename)
+            if os.path.exists(filename):
+                capture.open(filename)
         except:
             logger.debug("open cv failure")
             continue
@@ -313,3 +332,4 @@ if __name__ == "__main__":
 #        from ..components.core import GameLoopEvents
 
     typer.run(main)
+    

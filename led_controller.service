@@ -10,7 +10,7 @@ User=poleguy
 # https://serverfault.com/questions/806617/configuring-systemd-service-to-run-with-root-access
 #ExecStartPre=/usr/bin/sleep 10
 RestartSec=10
-ExecStart=/bin/bash -lc '/home/poleguy/flippy-data/2022/fire_led/run'
+ExecStart=/bin/bash -lc '/home/poleguy/flippy-data/2023/fire_led/run'
 #ExecStart=/bin/bash -lc 'echo blah'
 Restart=always
 
