@@ -43,8 +43,6 @@ to stop:
   sudo systecmctl stop led_controller.service
   sudo systecmctl disable led_controller.service
 '''
-
-
 # troubleshooting
 
 RuntimeError: NeoPixel support requires running with sudo, please try again!
@@ -63,5 +61,4 @@ To fix:
 sudo mount -o remout,rw /
 #to put it back to save the ssd from damage:
 sudo mount -o remout,ro /
-
 
