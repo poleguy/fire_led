@@ -100,9 +100,17 @@ def main(url_file = "calendar_url.txt"):
             start = event["DTSTART"].dt
             duration = event["DTEND"].dt - event["DTSTART"].dt
             transp = event["TRANSP"]
-            print(f"start {start} duration {duration} transp {transp}")
+            print(f"start {start} duration {duration} transp {transp}.")
+            
+
+            if isinstance(start,datetime.datetime):
+                minute = start.minute
+            else:
+                minute = 0
             if transp == "OPAQUE":
-                found_meeting = True
+                # next check start minute. if it starts 1 minute after the hour, it's just a place holder, so ignore
+                if minute != 1:
+                    found_meeting = True
         return found_meeting
 
     def busy():
@@ -130,8 +138,14 @@ def main(url_file = "calendar_url.txt"):
             duration = event["DTEND"].dt - event["DTSTART"].dt
             transp = event["TRANSP"]
             print(f"start {start} duration {duration} transp {transp}")
+            if isinstance(start,datetime.datetime):
+                minute = start.minute
+            else:
+                minute = 0
             if transp == "OPAQUE":
-                found_meeting = True
+                # next check start minute. if it starts 1 minute after the hour, it's just a place holder, so ignore
+                if minute != 1:
+                    found_meeting = True
         return found_meeting
 
     if busy():
