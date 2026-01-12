@@ -1,3 +1,4 @@
 calendar_url.txt
+*.log.*
 *~
 __pycache__

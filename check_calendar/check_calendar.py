@@ -108,9 +108,13 @@ def main(url_file = "calendar_url.txt"):
             else:
                 minute = 0
             if transp == "OPAQUE":
-                # next check start minute. if it starts 1 minute after the hour, it's just a place holder, so ignore
-                if minute != 1:
-                    found_meeting = True
+                # next check start minute. if it starts 1 minute after the hour or half hour, it's just a place holder, so ignore
+                found_meeting = True
+                if minute == 1:
+                    found_meeting = False
+                elif minute == 31:
+                    found_meeting = False
+                
         return found_meeting
 
     def busy():
@@ -144,8 +148,11 @@ def main(url_file = "calendar_url.txt"):
                 minute = 0
             if transp == "OPAQUE":
                 # next check start minute. if it starts 1 minute after the hour, it's just a place holder, so ignore
-                if minute != 1:
-                    found_meeting = True
+                found_meeting = True
+                if minute == 1:
+                    found_meeting = False
+                elif minute == 31:
+                    found_meeting = False
         return found_meeting
 
     if busy():
